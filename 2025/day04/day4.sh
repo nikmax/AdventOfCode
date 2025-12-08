@@ -1,39 +1,55 @@
 #!/bin/bash
 
 part(){
-    local line="$1"
-    local nbrs="$2"
-
-    echo -n "#"
-
-      for (( col = 0; col < ${#line}; col++ )); do 
-
-        echo -n "${line:col:1}"
-
+    local sum
+    if [[ "$line2" != "" ]]; then
+      for (( col = 0; col < ${#line2}; col++ )); do 
+	echo -n " #"
+        sum=0
+        (( i = col-1 ))
+        [[ "$roll" != "${line2:col:1}" ]] && continue
+	if (( i >= 0 )); then
+	  [[ "$roll" = "${line1:i:1}" ]] && (( sum += weight ))
+	  [[ "$roll" = "${line2:i:1}" ]] && (( sum += weight ))
+	  [[ "$roll" = "${line3:i:1}" ]] && (( sum += weight ))
+	fi
+	(( i++ ))
+	[[ "$roll" = "${line1:i:1}" ]] && (( sum += weight ))
+	[[ "$roll" = "${line3:i:1}" ]] && (( sum += weight ))
+	(( i++ ))
+	if (( i < ${#line2} )); then
+	  [[ "$roll" = "${line1:i:1}" ]] && (( sum += weight ))
+	  [[ "$roll" = "${line2:i:1}" ]] && (( sum += weight ))
+	  [[ "$roll" = "${line3:i:1}" ]] && (( sum += weight ))
+	fi
+        (( sum < neighbors )) && (( adding_up++ ))
       done
-
-
-    #(( adding_up += joltage )) && echo -n " #$joltage"
+    fi
+    line1=$line2
+    line2=$line3
+    line3=""
 }
 
 steps=0
 adding_up=0
 neighbors=4
+weight=1
+roll="@"
+line1=""
+line2=""
 
-echo "Day 3 Part 2"
+echo "Day 4 Part 1"
 echo
 
-while read -r -a grid; do
+while read -r -a line3; do
 
       (( steps++ ))
     
-      echo -n "$steps : $grid"
-    
-      part $grid $neighbors
-
+      echo -n "$steps : $line3"
+      part 
       echo
 
-done < test.txt
+done < <( cat input.txt; echo "")
 
 echo
-#echo "the total output joltage is $adding_up"
+echo "$adding_up rolls of paper can be accessed by a forklift"
