@@ -2,6 +2,7 @@
 
 part(){
     local sum
+    echo -n "   "
     if [[ "$line2" != "" ]]; then
       for (( col = 0; col < ${#line2}; col++ )); do 
 	echo -n " #"
@@ -23,6 +24,7 @@ part(){
 	  [[ "$roll" = "${line3:i:1}" ]] && (( sum += weight ))
 	fi
         (( sum < neighbors )) && (( adding_up++ ))
+	echo -n "$sum"
       done
     fi
     line1=$line2
@@ -30,26 +32,35 @@ part(){
     line3=""
 }
 
+file="test.txt"
+map=()
 steps=0
-adding_up=0
 neighbors=4
 weight=1
 roll="@"
-line1=""
-line2=""
+sum=0
 
 echo "Day 4 Part 1"
 echo
 
 while read -r -a line3; do
-
-      (( steps++ ))
-    
-      echo -n "$steps : $line3"
+  map+=("$line3")
+done < <( cat $file; echo "")
+x=5
+while (( 0 != x-- )); do
+  line1=""
+  line2=""
+  adding_up=0
+  for row in "${!map[@]}"; do
+      line3="${map[$row]}"
+      echo -n "$row : $line3"
       part 
       echo
-
-done < <( cat input.txt; echo "")
+  done
+  echo "*** $adding_up"
+  (( sum += adding_up ))
+  #(( adding_up = 0 )) && break
+done
 
 echo
-echo "$adding_up rolls of paper can be accessed by a forklift"
+echo "$sum rolls of paper can be accessed by a forklift"
